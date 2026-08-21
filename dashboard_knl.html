@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản Lý Khung Năng Lực & KPI KTV Viễn Thông</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="bg-slate-100 text-slate-800 font-sans antialiased">
+
+    <!-- Header -->
+    <header class="bg-blue-900 text-white shadow-md">
+        <div class="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
+            <div class="flex items-center space-x-3">
+                <i class="fa-solid font-bold text-2xl fa-network-wired text-blue-400"></i>
+                <div>
+                    <h1 class="text-xl font-bold">Hệ Thống Khung Năng Lực & KPI KTV</h1>
+                    <p class="text-xs text-blue-200">Chi nhánh Phương Nam BDH - Báo Cáo Vận Hành</p>
+                </div>
+            </div>
+            <span class="bg-blue-800 text-blue-100 text-xs px-3 py-1 rounded-full border border-blue-700">
+                <i class="fa-solid fa-users mr-1"></i> 72 Kỹ thuật viên
+            </span>
+        </div>
+    </header>
+
+    <!-- Navigation Tabs -->
+    <div class="bg-white border-b border-slate-200 sticky top-0 z-10">
+        <div class="max-w-7xl mx-auto px-4 flex space-x-8">
+            <button onclick="switchTab('tab-kpi')" id="btn-tab-kpi" class="tab-btn py-4 px-2 border-b-2 border-blue-600 font-semibold text-blue-600 flex items-center space-x-2">
+                <i class="fa-solid fa-chart-line"></i><span>Tổng Quan KPI & Điểm Nghẽn</span>
+            </button>
+            <button onclick="switchTab('tab-matrix')" id="btn-tab-matrix" class="tab-btn py-4 px-2 border-b-2 border-transparent text-slate-500 hover:text-blue-600 font-semibold flex items-center space-x-2">
+                <i class="fa-solid fa-sitemap"></i><span>Ma Trận Năng Lực (Bậc 0-7)</span>
+            </button>
+            <button onclick="switchTab('tab-eval')" id="btn-tab-eval" class="tab-btn py-4 px-2 border-b-2 border-transparent text-slate-500 hover:text-blue-600 font-semibold flex items-center space-x-2">
+                <i class="fa-solid fa-user-check"></i><span>Công Cụ Đánh Giá KTV</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto px-4 py-6">
+
+        <!-- TAB 1: DASHBOARD KPI -->
+        <div id="tab-kpi" class="tab-content space-y-6">
+            <!-- Top Stats Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200">
+                    <p class="text-xs text-slate-500 font-medium">Xếp loại OSML Loại L</p>
+                    <p class="text-2xl font-bold text-red-600 mt-1">54.2% <span class="text-xs text-slate-400 font-normal">(39/72 KTV)</span></p>
+                    <p class="text-xs text-red-500 mt-2"><i class="fa-solid fa-triangle-exclamation"></i> Cần ưu tiên đào tạo lại</p>
+                </div>
+                <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200">
+                    <p class="text-xs text-slate-500 font-medium">TGXL Bảo Trì Trung Bình</p>
+                    <p class="text-2xl font-bold text-amber-600 mt-1">13.3 giờ</p>
+                    <p class="text-xs text-amber-600 mt-2"><i class="fa-solid fa-clock"></i> Mục tiêu: ≤ 8.0 giờ (Đạt 1.4%)</p>
+                </div>
+                <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200">
+                    <p class="text-xs text-slate-500 font-medium">Tỷ lệ Chất Lượng Lại (CLL)</p>
+                    <p class="text-2xl font-bold text-amber-600 mt-1">14.24%</p>
+                    <p class="text-xs text-amber-600 mt-2"><i class="fa-solid fa-circle-exclamation"></i> Mục tiêu: ≤ 8.5% (Đạt 20.8%)</p>
+                </div>
+                <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200">
+                    <p class="text-xs text-slate-500 font-medium">Tỷ lệ Đúng Hẹn TB</p>
+                    <p class="text-2xl font-bold text-emerald-600 mt-1">88.58%</p>
+                    <p class="text-xs text-emerald-600 mt-2"><i class="fa-solid fa-circle-check"></i> Mục tiêu: ≥ 95.0% (Đạt 22.2%)</p>
+                </div>
+            </div>
+
+            <!-- Charts Section -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Chart 1: OSML Distribution -->
+                <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-200">
+                    <h3 class="font-bold text-slate-700 text-base mb-4"><i class="fa-solid fa-chart-pie mr-2 text-blue-600"></i>Phân Bổ Phân Loại OSML</h3>
+                    <div class="h-64 flex justify-center">
+                        <canvas id="osmlChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Chart 2: Team Leader Performance -->
+                <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-200">
+                    <h3 class="font-bold text-slate-700 text-base mb-4"><i class="fa-solid fa-chart-bar mr-2 text-blue-600"></i>Điểm Trung Bình Theo Đội Trưởng</h3>
+                    <div class="h-64">
+                        <canvas id="teamChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 2: KHUNG NĂNG LỰC -->
+        <div id="tab-matrix" class="tab-content hidden space-y-6">
+            <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+                <div class="p-4 bg-slate-50 border-b border-slate-200">
+                    <h3 class="font-bold text-slate-800">Ma Trận Khung Năng Lực Phân Bậc Kỹ Thuật Viên</h3>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-sm text-left text-slate-600">
+                        <thead class="text-xs text-slate-700 uppercase bg-slate-100 border-b border-slate-200">
+                            <tr>
+                                <th class="px-4 py-3">Bậc Nghề</th>
+                                <th class="px-4 py-3">Vai Trò Chức Danh</th>
+                                <th class="px-4 py-3">Năng Lực Yêu Cầu</th>
+                                <th class="px-4 py-3">Chỉ Số KPI Trọng Tâm</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-200">
+                            <tr>
+                                <td class="px-4 py-3 font-bold text-blue-700 bg-blue-50/50">Bậc 0 - 1</td>
+                                <td class="px-4 py-3 font-medium text-slate-900">KTV Tập Sự / Sơ Cấp</td>
+                                <td class="px-4 py-3">Lắp đặt FTTH cơ bản, kéo cáp, đảm bảo an toàn lao động, làm việc theo hướng dẫn.</td>
+                                <td class="px-4 py-3">• Đúng hẹn ≥ 90%<br>• Hoàn thành đào tạo an toàn</td>
+                            </tr>
+                            <tr>
+                                <td class="px-4 py-3 font-bold text-blue-700 bg-blue-50/50">Bậc 2 - 3</td>
+                                <td class="px-4 py-3 font-medium text-slate-900">KTV Chính</td>
+                                <td class="px-4 py-3">Độc lập thi công TK & xử lý BT tiêu chuẩn. Sử dụng máy đo OTDR, khoanh vùng suy hao quang.</td>
+                                <td class="px-4 py-3">• TGXL BT ≤ 10h<br>• % CLL ≤ 8.5%<br>• Điểm NSLĐ ≥ 7.0</td>
+                            </tr>
+                            <tr>
+                                <td class="px-4 py-3 font-bold text-blue-700 bg-blue-50/50">Bậc 4 - 5</td>
+                                <td class="px-4 py-3 font-medium text-slate-900">KTV Lành Nghề / Đa Năng</td>
+                                <td class="px-4 py-3">Chuyên gia sửa ca khó, triển khai dịch vụ gia tăng (Gsafe), xử lý sự cố hạ tầng và giữ chân KH.</td>
+                                <td class="px-4 py-3">• TGXL BT ≤ 8h<br>• Điểm Gsafe/Thu hồi cao<br>• Rời mạng ≤ 0.6%</td>
+                            </tr>
+                            <tr>
+                                <td class="px-4 py-3 font-bold text-blue-700 bg-blue-50/50">Bậc 6 - 7</td>
+                                <td class="px-4 py-3 font-medium text-slate-900">KTV Nòng Cốt / Mentor</td>
+                                <td class="px-4 py-3">Kèm cặp KTV Bậc 0-3, tối ưu hạ tầng tuyến cáp, đề xuất cải tiến quy trình tác nghiệp.</td>
+                                <td class="px-4 py-3">• Đội xếp loại OSML: M/S<br>• Tỷ lệ CLL nhóm ≤ 8.5%</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 3: ĐÁNH GIÁ KTV -->
+        <div id="tab-eval" class="tab-content hidden">
+            <div class="max-w-2xl mx-auto bg-white p-6 rounded-xl shadow-sm border border-slate-200">
+                <h3 class="font-bold text-slate-800 text-lg mb-4 text-center">Công Cụ Tự Đánh Giá & Xếp Cấp Năng Lực KTV</h3>
+                
+                <form id="evalForm" class="space-y-4">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 mb-1">Bậc nghề hiện tại</label>
+                        <select id="bacNghe" class="w-full border border-slate-300 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-blue-500">
+                            <option value="1">Bậc 1</option>
+                            <option value="2" selected>Bậc 2</option>
+                            <option value="4">Bậc 4</option>
+                            <option value="6">Bậc 6</option>
+                        </select>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-600 mb-1">TGXL Bảo Trì (giờ)</label>
+                            <input type="number" step="0.1" id="tgxlBt" value="11.5" class="w-full border border-slate-300 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-blue-500">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-600 mb-1">Tỷ lệ Chất Lượng Lại (%)</label>
+                            <input type="number" step="0.1" id="tyLeCll" value="10.2" class="w-full border border-slate-300 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-blue-500">
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-600 mb-1">Tỷ lệ Đúng Hẹn (%)</label>
+                            <input type="number" step="0.1" id="dungHen" value="91.0" class="w-full border border-slate-300 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-blue-500">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-600 mb-1">Điểm NSLĐ</label>
+                            <input type="number" step="0.1" id="nsld" value="6.5" class="w-full border border-slate-300 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-blue-500">
+                        </div>
+                    </div>
+
+                    <button type="button" onclick="evaluateKTV()" class="w-full bg-blue-600 text-white font-semibold py-3 rounded-lg hover:bg-blue-700 transition shadow">
+                        Chạy Đánh Giá Năng Lực
+                    </button>
+                </form>
+
+                <!-- Result Card -->
+                <div id="evalResult" class="mt-6 p-4 rounded-lg bg-slate-50 border border-slate-200 hidden">
+                    <h4 class="font-bold text-slate-800 text-sm mb-2" id="resTitle">Kết quả đánh giá</h4>
+                    <p class="text-xs text-slate-600" id="resContent"></p>
+                    <div class="mt-3 p-3 bg-amber-50 border border-amber-200 rounded text-xs text-amber-800" id="resAction"></div>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- JavaScript logic -->
+    <script>
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            document.querySelectorAll('.tab-btn').forEach(el => {
+                el.classList.remove('border-blue-600', 'text-blue-600');
+                el.classList.add('border-transparent', 'text-slate-500');
+            });
+
+            document.getElementById(tabId).classList.remove('hidden');
+            const btn = document.getElementById('btn-' + tabId);
+            btn.classList.add('border-blue-600', 'text-blue-600');
+            btn.classList.remove('border-transparent', 'text-slate-500');
+        }
+
+        // Render Charts
+        window.onload = function() {
+            // Chart 1: OSML Distribution
+            new Chart(document.getElementById('osmlChart'), {
+                type: 'doughnut',
+                data: {
+                    labels: ['Loại L (Cần cải thiện)', 'Loại M (Khá/Đạt)', 'Loại S (Xuất sắc)'],
+                    datasets: [{
+                        data: [39, 32, 1],
+                        backgroundColor: ['#ef4444', '#3b82f6', '#10b981']
+                    }]
+                },
+                options: { responsive: true, maintainAspectRatio: false }
+            });
+
+            // Chart 2: Team Leader Points
+            new Chart(document.getElementById('teamChart'), {
+                type: 'bar',
+                data: {
+                    labels: ['Đinh Cao Trí', 'Nguyễn Thanh Phụng', 'Huỳnh Tiến Thạnh', 'Đoàn Thao'],
+                    datasets: [{
+                        label: 'Điểm KPI Trung Bình',
+                        data: [67.37, 62.51, 55.69, 51.51],
+                        backgroundColor: ['#10b981', '#3b82f6', '#f59e0b', '#ef4444']
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: { y: { beginAtZero: true, max: 100 } }
+                }
+            });
+        };
+
+        // KTV Evaluation Logic
+        function evaluateKTV() {
+            const bt = parseFloat(document.getElementById('tgxlBt').value);
+            const cll = parseFloat(document.getElementById('tyLeCll').value);
+            const dungHen = parseFloat(document.getElementById('dungHen').value);
+            const nsld = parseFloat(document.getElementById('nsld').value);
+
+            const resultDiv = document.getElementById('evalResult');
+            const resTitle = document.getElementById('resTitle');
+            const resContent = document.getElementById('resContent');
+            const resAction = document.getElementById('resAction');
+
+            resultDiv.classList.remove('hidden');
+
+            let passed = true;
+            let gaps = [];
+
+            if (bt > 8.0) { passed = false; gaps.push(`TGXL Bảo trì (${bt}h > 8.0h)`); }
+            if (cll > 8.5) { passed = false; gaps.push(`Tỷ lệ CLL (${cll}% > 8.5%)`); }
+            if (dungHen < 95.0) { passed = false; gaps.push(`Tỷ lệ Đúng hẹn (${dungHen}% < 95%)`); }
+            if (nsld < 7.0) { passed = false; gaps.push(`Điểm NSLĐ (${nsld} < 7.0)`); }
+
+            if (passed) {
+                resTitle.textContent = "ĐÁNH GIÁ: ĐẠT CHUẨN NĂNG LỰC CẤP ĐỘ";
+                resTitle.className = "font-bold text-emerald-700 text-sm mb-2";
+                resContent.textContent = "KTV đạt đầy đủ các chỉ số SLA cốt lõi. Đủ điều kiện xem xét nâng Bậc nghề hoặc quy hoạch làm Trưởng nhóm Kỹ thuật (Mentor).";
+                resAction.textContent = "Đề xuất: Tham gia chương trình Kèm cặp KTV mới và thực hiện các ca kỹ thuật đa năng (Gsafe, Hạ tầng).";
+            } else {
+                resTitle.textContent = "ĐÁNH GIÁ: CHƯA ĐẠT CHUẨN (CẦN ĐÀO TẠO ĐIỂM NGHỄN)";
+                resTitle.className = "font-bold text-red-700 text-sm mb-2";
+                resContent.textContent = "Các chỉ số chưa đạt chuẩn SLA: " + gaps.join(', ') + ".";
+                resAction.textContent = "Hành động đề xuất: Đăng ký khóa đào tạo 'Kiểm soát Chất lượng thi công' & 'Xử lý Bảo trì nhanh' trong vòng 14 ngày.";
+            }
+        }
+    </script>
+</body>
+</html>
