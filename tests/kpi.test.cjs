@@ -1,0 +1,7 @@
+const {test}=require('node:test');const assert=require('node:assert/strict');const K=require('../kpi-core');
+const header=['Chi nhánh','acc mobix','Tháng','CLL','CSAT12','NSLĐ','TGXL BT','Đúng hẹn','SCAT 1','SCAT 2'];
+const row=['BDH','phuongnam.a','2026-09','8,5%','','7','8','95',0,0];
+test('Vietnamese headers, decimal comma, blank CSAT and threshold boundaries',()=>{const {data,errors}=K.parse([header,row]);assert.deepEqual(errors,[]);assert.equal(data[0].cll,8.5);assert.equal(data[0].csat12,null);assert.deepEqual(K.warnings(data[0],{cll:8.5,csat12:95,nsld:7,tgxl_bt:8,dung_hen:95}),[]);});
+test('reject duplicate identities, invalid months, malformed numbers and ranges',()=>{for(const [index,value]of [[2,'2026-13'],[3,'oops'],[3,101],[8,1.5]]){const r=[...row];r[index]=value;assert.equal(K.parse([header,r]).errors.length,1);}assert.equal(K.parse([header,row,row]).errors.length,1);assert.throws(()=>K.parse([['ktv'],['a']]),/Thiếu cột/);});
+test('quoted CSV newline, BOM, escaped quotes, semicolon, malformed quote',()=>{assert.deepEqual(K.csv('\uFEFFa;b\r\n"a; b";"x""y\nz"'),[['a','b'],['a; b','x"y\nz']]);assert.throws(()=>K.csv('a,b\n"open'),/chưa đóng/);});
+test('filters, means exclude missing, SCAT warnings',()=>{const a=K.parse([header,row]).data[0],b={...a,ktv:'b',thang:'2026-10',cll:12,scat1:1};assert.equal(K.filter([a,b],'BDH','b','2026-10').length,1);assert.equal(K.mean([a,b],'cll'),10.25);assert.equal(K.mean([a],'csat12'),null);assert.ok(K.warnings(b,{cll:8.5,csat12:95,nsld:7,tgxl_bt:8,dung_hen:95}).includes('SCAT1'));});

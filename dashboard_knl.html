@@ -5,8 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Quản Lý Khung Năng Lực & KPI KTV Viễn Thông</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.8/dist/chart.umd.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<style>.hidden{display:none!important}body{margin:0;font-family:system-ui,sans-serif;background:#f1f5f9;color:#1e293b}main{max-width:1280px;margin:auto;padding:24px 16px}header{background:#1e3a8a;color:white;padding:16px}button{cursor:pointer}button:disabled{opacity:.5;cursor:default}label{display:block} select,input,button{min-height:40px} .controls{display:flex;flex-wrap:wrap;gap:12px;align-items:end}.controls label{font-size:13px}.controls input,.controls select{display:block;border:1px solid #cbd5e1;border-radius:6px;padding:6px;max-width:100%}.panel{background:white;padding:20px;border:1px solid #e2e8f0;border-radius:12px;margin-bottom:18px}.action{background:#1e40af;color:white;border-radius:6px;padding:8px 14px}.scroll{overflow:auto}#details th,#details td{padding:10px;text-align:left;white-space:nowrap;border-bottom:1px solid #e2e8f0}.bad{color:#b91c1c}.muted{color:#64748b}nav{overflow:auto}canvas{max-width:100%}</style>
 </head>
 <body class="bg-slate-100 text-slate-800 font-sans antialiased">
 
@@ -17,18 +19,18 @@
                 <i class="fa-solid font-bold text-2xl fa-network-wired text-blue-400"></i>
                 <div>
                     <h1 class="text-xl font-bold">Hệ Thống Khung Năng Lực & KPI KTV</h1>
-                    <p class="text-xs text-blue-200">Chi nhánh Phương Nam BDH - Báo Cáo Vận Hành</p>
+                    <p class="text-xs text-blue-200">Báo cáo từ dữ liệu nhập • Xử lý tại trình duyệt</p>
                 </div>
             </div>
             <span class="bg-blue-800 text-blue-100 text-xs px-3 py-1 rounded-full border border-blue-700">
-                <i class="fa-solid fa-users mr-1"></i> 72 Kỹ thuật viên
+                <i class="fa-solid fa-users mr-1"></i> <span id="headCount">Chưa nhập dữ liệu</span>
             </span>
         </div>
     </header>
 
     <!-- Navigation Tabs -->
     <div class="bg-white border-b border-slate-200 sticky top-0 z-10">
-        <div class="max-w-7xl mx-auto px-4 flex space-x-8">
+        <div class="max-w-7xl mx-auto px-4 flex space-x-8" style="overflow-x:auto">
             <button onclick="switchTab('tab-kpi')" id="btn-tab-kpi" class="tab-btn py-4 px-2 border-b-2 border-blue-600 font-semibold text-blue-600 flex items-center space-x-2">
                 <i class="fa-solid fa-chart-line"></i><span>Tổng Quan KPI & Điểm Nghẽn</span>
             </button>
@@ -46,49 +48,20 @@
 
         <!-- TAB 1: DASHBOARD KPI -->
         <div id="tab-kpi" class="tab-content space-y-6">
-            <!-- Top Stats Grid -->
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-                <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200">
-                    <p class="text-xs text-slate-500 font-medium">Xếp loại OSML Loại L</p>
-                    <p class="text-2xl font-bold text-red-600 mt-1">54.2% <span class="text-xs text-slate-400 font-normal">(39/72 KTV)</span></p>
-                    <p class="text-xs text-red-500 mt-2"><i class="fa-solid fa-triangle-exclamation"></i> Cần ưu tiên đào tạo lại</p>
-                </div>
-                <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200">
-                    <p class="text-xs text-slate-500 font-medium">TGXL Bảo Trì Trung Bình</p>
-                    <p class="text-2xl font-bold text-amber-600 mt-1">13.3 giờ</p>
-                    <p class="text-xs text-amber-600 mt-2"><i class="fa-solid fa-clock"></i> Mục tiêu: ≤ 8.0 giờ (Đạt 1.4%)</p>
-                </div>
-                <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200">
-                    <p class="text-xs text-slate-500 font-medium">Tỷ lệ Chất Lượng Lại (CLL)</p>
-                    <p class="text-2xl font-bold text-amber-600 mt-1">14.24%</p>
-                    <p class="text-xs text-amber-600 mt-2"><i class="fa-solid fa-circle-exclamation"></i> Mục tiêu: ≤ 8.5% (Đạt 20.8%)</p>
-                </div>
-                <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200">
-                    <p class="text-xs text-slate-500 font-medium">Tỷ lệ Đúng Hẹn TB</p>
-                    <p class="text-2xl font-bold text-emerald-600 mt-1">88.58%</p>
-                    <p class="text-xs text-emerald-600 mt-2"><i class="fa-solid fa-circle-check"></i> Mục tiêu: ≥ 95.0% (Đạt 22.2%)</p>
-                </div>
-            </div>
-
-            <!-- Charts Section -->
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <!-- Chart 1: OSML Distribution -->
-                <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-200">
-                    <h3 class="font-bold text-slate-700 text-base mb-4"><i class="fa-solid fa-chart-pie mr-2 text-blue-600"></i>Phân Bổ Phân Loại OSML</h3>
-                    <div class="h-64 flex justify-center">
-                        <canvas id="osmlChart"></canvas>
-                    </div>
-                </div>
-
-                <!-- Chart 2: Team Leader Performance -->
-                <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-200">
-                    <h3 class="font-bold text-slate-700 text-base mb-4"><i class="fa-solid fa-chart-bar mr-2 text-blue-600"></i>Điểm Trung Bình Theo Đội Trưởng</h3>
-                    <div class="h-64">
-                        <canvas id="teamChart"></canvas>
-                    </div>
-                </div>
-            </div>
-        </div>
+<section class="panel">
+<h2 class="font-bold text-lg">Nhập dữ liệu KPI KTV</h2>
+<p class="text-sm muted">Mỗi dòng là một KTV trong một tháng. Nhập file mới thay toàn bộ dữ liệu hiện tại; không lưu dữ liệu khi tải lại trang.</p>
+<div class="controls mt-3"><label>Excel / CSV<input id="file" type="file" accept=".xlsx,.xls,.csv"></label><label>Sheet<select id="sheet" disabled></select></label><button id="template" class="action">Tải CSV mẫu</button><button id="clear" class="action">Xóa dữ liệu</button></div>
+<p id="status" role="status" aria-live="polite" class="text-sm mt-3">Chưa có dữ liệu. Không sử dụng số liệu minh họa.</p>
+<details class="mt-3 text-sm"><summary>Định dạng và quy tắc nhập</summary><p>Cột bắt buộc: chi_nhanh, ktv (acc), thang (YYYY-MM). Cột tùy chọn: ho_ten, cll, csat12, nsld, tgxl_bt, dung_hen, scat1, scat2, osml, doi_truong, diem_kpi. Tỷ lệ nhập theo điểm phần trăm (8.5 hoặc 8,5%); ô Excel định dạng % được chuyển đổi. NSLĐ là điểm; TGXL là giờ; SCAT là số sự kiện. Dòng trùng chi nhánh + acc + tháng bị từ chối. Sheet có tiêu đề ở dòng đầu.</p></details>
+</section>
+<section class="panel"><div class="controls"><label>Chi nhánh<select id="branch"></select></label><label>KTV<select id="technician"></select></label><label>Tháng<select id="month"></select></label><button id="reset" class="action">Bỏ bộ lọc</button></div>
+<details class="mt-3"><summary>Ngưỡng cảnh báo tham khảo — cần xác nhận nghiệp vụ</summary><div id="thresholds" class="controls mt-3"></div><p class="text-sm muted">Cảnh báo khi một KPI vượt ngưỡng hoặc SCAT 1/2 &gt; 0. Chưa áp dụng quy tắc 3/7 vì nguồn chỉ định nghĩa 4 KPI; không suy diễn KPI còn thiếu. CSAT trống không gây cảnh báo nhưng được ghi nhận thiếu dữ liệu.</p></details></section>
+<section id="cards" class="grid grid-cols-1 md:grid-cols-4 gap-4"></section>
+<section class="panel"><h3 class="font-bold">Xu hướng theo tháng</h3><label>Chỉ số<select id="metric"></select></label><p class="text-sm muted">Trung bình cộng các dòng có dữ liệu, không phải tỷ lệ có trọng số. Xu hướng theo chi nhánh/KTV; bộ lọc tháng chỉ áp dụng thẻ KPI và bảng chi tiết.</p><div style="height:280px"><canvas id="trend"></canvas></div><p id="chartStatus" role="status"></p></section>
+<section class="panel"><h3 class="font-bold">Phân bổ OSML và điểm theo đội trưởng</h3><p id="extraStatus" class="text-sm muted"></p><div class="grid grid-cols-1 md:grid-cols-2 gap-6"><div style="height:260px"><canvas id="osmlChart"></canvas></div><div style="height:260px"><canvas id="teamChart"></canvas></div></div></section>
+<section class="panel"><h3 class="font-bold">Chi tiết và cảnh báo</h3><p id="summary" class="text-sm muted"></p><div class="scroll"><table id="details" class="w-full text-sm"><thead><tr><th>Chi nhánh</th><th>Acc / Họ tên</th><th>Tháng</th><th>CLL %</th><th>CSAT12 %</th><th>NSLĐ</th><th>TGXL giờ</th><th>Đúng hẹn %</th><th>Cảnh báo / dữ liệu thiếu</th></tr></thead><tbody></tbody></table></div><div class="controls mt-3"><button id="prev" class="action">Trước</button><span id="page"></span><button id="next" class="action">Sau</button></div></section>
+</div>
 
         <!-- TAB 2: KHUNG NĂNG LỰC -->
         <div id="tab-matrix" class="tab-content hidden space-y-6">
@@ -144,7 +117,7 @@
                 
                 <form id="evalForm" class="space-y-4">
                     <div>
-                        <label class="block text-xs font-semibold text-slate-600 mb-1">Bậc nghề hiện tại</label>
+                        <label class="block text-xs font-semibold text-slate-600 mb-1">Bậc nghề hiện tại (tham khảo, chưa dùng trong tính toán)</label>
                         <select id="bacNghe" class="w-full border border-slate-300 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-blue-500">
                             <option value="1">Bậc 1</option>
                             <option value="2" selected>Bậc 2</option>
@@ -206,40 +179,6 @@
             btn.classList.remove('border-transparent', 'text-slate-500');
         }
 
-        // Render Charts
-        window.onload = function() {
-            // Chart 1: OSML Distribution
-            new Chart(document.getElementById('osmlChart'), {
-                type: 'doughnut',
-                data: {
-                    labels: ['Loại L (Cần cải thiện)', 'Loại M (Khá/Đạt)', 'Loại S (Xuất sắc)'],
-                    datasets: [{
-                        data: [39, 32, 1],
-                        backgroundColor: ['#ef4444', '#3b82f6', '#10b981']
-                    }]
-                },
-                options: { responsive: true, maintainAspectRatio: false }
-            });
-
-            // Chart 2: Team Leader Points
-            new Chart(document.getElementById('teamChart'), {
-                type: 'bar',
-                data: {
-                    labels: ['Đinh Cao Trí', 'Nguyễn Thanh Phụng', 'Huỳnh Tiến Thạnh', 'Đoàn Thao'],
-                    datasets: [{
-                        label: 'Điểm KPI Trung Bình',
-                        data: [67.37, 62.51, 55.69, 51.51],
-                        backgroundColor: ['#10b981', '#3b82f6', '#f59e0b', '#ef4444']
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    scales: { y: { beginAtZero: true, max: 100 } }
-                }
-            });
-        };
-
         // KTV Evaluation Logic
         function evaluateKTV() {
             const bt = parseFloat(document.getElementById('tgxlBt').value);
@@ -247,6 +186,7 @@
             const dungHen = parseFloat(document.getElementById('dungHen').value);
             const nsld = parseFloat(document.getElementById('nsld').value);
 
+            if (![bt, cll, dungHen, nsld].every(Number.isFinite) || bt < 0 || cll < 0 || cll > 100 || dungHen < 0 || dungHen > 100 || nsld < 0) { alert('Nhập đủ bốn chỉ số hợp lệ; tỷ lệ phải từ 0 đến 100.'); return; }
             const resultDiv = document.getElementById('evalResult');
             const resTitle = document.getElementById('resTitle');
             const resContent = document.getElementById('resContent');
@@ -263,9 +203,9 @@
             if (nsld < 7.0) { passed = false; gaps.push(`Điểm NSLĐ (${nsld} < 7.0)`); }
 
             if (passed) {
-                resTitle.textContent = "ĐÁNH GIÁ: ĐẠT CHUẨN NĂNG LỰC CẤP ĐỘ";
+                resTitle.textContent = "ĐẠT 4 NGƯỠNG THAM KHẢO";
                 resTitle.className = "font-bold text-emerald-700 text-sm mb-2";
-                resContent.textContent = "KTV đạt đầy đủ các chỉ số SLA cốt lõi. Đủ điều kiện xem xét nâng Bậc nghề hoặc quy hoạch làm Trưởng nhóm Kỹ thuật (Mentor).";
+                resContent.textContent = "KTV đạt bốn ngưỡng tham khảo. Kết quả không xác định bậc nghề hay điều kiện nâng bậc.";
                 resAction.textContent = "Đề xuất: Tham gia chương trình Kèm cặp KTV mới và thực hiện các ca kỹ thuật đa năng (Gsafe, Hạ tầng).";
             } else {
                 resTitle.textContent = "ĐÁNH GIÁ: CHƯA ĐẠT CHUẨN (CẦN ĐÀO TẠO ĐIỂM NGHỄN)";
@@ -275,5 +215,7 @@
             }
         }
     </script>
+<script src="kpi-core.js"></script>
+<script src="dashboard.js"></script>
 </body>
 </html>
